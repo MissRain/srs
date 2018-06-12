@@ -87,6 +87,8 @@ const char* _srs_version = "XCORE-"RTMP_SIG_SRS_SERVER;
 #define SRS_CONF_DEFAULT_HLS_CLEANUP true
 #define SRS_CONF_DEFAULT_HLS_WAIT_KEYFRAME true
 #define SRS_CONF_DEFAULT_HLS_NB_NOTIFY 64
+//WRDTech Custom Function
+#define SRS_CONF_DEFAULT_HLS_WRD_TIMESHIFT true
 #define SRS_CONF_DEFAULT_DVR_PATH "./objs/nginx/html/[app]/[stream].[timestamp].flv"
 #define SRS_CONF_DEFAULT_DVR_PLAN_SESSION "session"
 #define SRS_CONF_DEFAULT_DVR_PLAN_SEGMENT "segment"
@@ -1899,6 +1901,8 @@ int SrsConfig::check_config()
                         && m != "hls_storage" && m != "hls_mount" && m != "hls_td_ratio" && m != "hls_aof_ratio" && m != "hls_acodec" && m != "hls_vcodec"
                         && m != "hls_m3u8_file" && m != "hls_ts_file" && m != "hls_ts_floor" && m != "hls_cleanup" && m != "hls_nb_notify"
                         && m != "hls_wait_keyframe" && m != "hls_dispose"
+                        //WRDTech Custom Function
+                        && m != "hls_wrd_timeshift"
                         ) {
                         ret = ERROR_SYSTEM_CONFIG_INVALID;
                         srs_error("unsupported vhost hls directive %s, ret=%d", m.c_str(), ret);
@@ -3896,6 +3900,24 @@ bool SrsConfig::get_hls_wait_keyframe(string vhost)
     }
     
     return SRS_CONF_PERFER_TRUE(conf->arg0());
+}
+
+//WRDTech Custom Function
+bool SrsConfig::get_hls_wrd_timeshift(string vhost)
+{
+    SrsConfDirective* hls = get_hls(vhost);
+
+    if (!hls) {
+        return SRS_CONF_DEFAULT_HLS_WRD_TIMESHIFT;
+    }
+
+    SrsConfDirective* conf = hls->get("hls_wrd_timeshift");
+
+    if (!conf || conf->arg0().empty()) {
+        return SRS_CONF_DEFAULT_HLS_WRD_TIMESHIFT;
+    }
+
+    return SRS_CONF_PREFER_TRUE(conf->arg0());
 }
 
 SrsConfDirective *SrsConfig::get_hds(const string &vhost)

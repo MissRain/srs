@@ -939,6 +939,12 @@ public:
      * that is, to read max bytes of the bytes from the callback, or timeout or error.
      */
     virtual int                 get_vhost_hls_nb_notify(std::string vhost);
+    /**
+     * WRDTech Custom Function
+     * By MissRain At 2018-06-12
+     * whether enable hls timeshift function for hls live.
+     */
+    virtual bool                get_hls_wrd_timeshift(std::string vhost);
 // hds section
 private:
     /**
