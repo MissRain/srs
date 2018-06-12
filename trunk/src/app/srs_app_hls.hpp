@@ -205,6 +205,9 @@ private:
     int max_td;
     std::string m3u8;
     std::string m3u8_url;
+    //WRDTech
+private:
+    bool hls_wrd_timeshift;
 private:
     // TODO: FIXME: remove it.
     bool should_write_cache;

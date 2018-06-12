@@ -302,6 +302,8 @@ SrsHlsMuxer::SrsHlsMuxer()
     should_write_file = true;
     async = new SrsAsyncCallWorker();
     context = new SrsTsContext();
+    //WRDTech
+    hls_wrd_timeshift = true;
 }
 
 SrsHlsMuxer::~SrsHlsMuxer()
@@ -388,7 +390,8 @@ int SrsHlsMuxer::initialize()
 
 int SrsHlsMuxer::update_config(SrsRequest* r, string entry_prefix,
     string path, string m3u8_file, string ts_file, double fragment, double window,
-    bool ts_floor, double aof_ratio, bool cleanup, bool wait_keyframe
+    //WRDTech
+    bool ts_floor, double aof_ratio, bool cleanup, bool wait_keyframe, bool wrd_timeshift
 ) {
     int ret = ERROR_SUCCESS;
     
@@ -407,6 +410,7 @@ int SrsHlsMuxer::update_config(SrsRequest* r, string entry_prefix,
     accept_floor_ts = 0;
     hls_window = window;
     deviation_ts = 0;
+    hls_wrd_timeshift = wrd_timeshift;
     
     // generate the m3u8 dir and path.
     m3u8_url = srs_path_build_stream(m3u8_file, req->vhost, req->app, req->stream);
@@ -962,6 +966,8 @@ int SrsHlsCache::on_publish(SrsHlsMuxer* muxer, SrsRequest* req, int64_t segment
     bool ts_floor = _srs_config->get_hls_ts_floor(vhost);
     // the seconds to dispose the hls.
     int hls_dispose = _srs_config->get_hls_dispose(vhost);
+    //WRDTech
+    bool wrd_timeshift = _srs_config->get_hls_wrd_timeshift(vhost);
     
     // TODO: FIXME: support load exists m3u8, to continue publish stream.
     // for the HLS donot requires the EXT-X-MEDIA-SEQUENCE be monotonically increase.
@@ -969,7 +975,7 @@ int SrsHlsCache::on_publish(SrsHlsMuxer* muxer, SrsRequest* req, int64_t segment
     // open muxer
     if ((ret = muxer->update_config(req, entry_prefix,
         path, m3u8_file, ts_file, hls_fragment, hls_window, ts_floor, hls_aof_ratio,
-        cleanup, wait_keyframe)) != ERROR_SUCCESS
+        cleanup, wait_keyframe, wrd_timeshift)) != ERROR_SUCCESS
     ) {
         srs_error("m3u8 muxer update config failed. ret=%d", ret);
         return ret;
